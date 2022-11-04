@@ -3,103 +3,184 @@
   (mapcar 'kill-buffer (buffer-list))
   (delete-other-windows))
 
+;;its in the name
+(defun open-terminal-in-workdir ()
+  "open terminal in current directory"
+  (interactive)
+  (call-process-shell-command
+   (concat "gnome-terminal –working-directory=" default-directory) nil 0))
+
 (global-set-key (kbd "C-x K") 'nuke-all-buffers)
 
+;;FOLLOWING CODE IS FOR JUMPING BETWEEN BRACKETS
+(defvar xah-brackets '("“”" "()" "[]" "{}" "<>" "＜＞" "（）" "［］" "｛｝" "⦅⦆" "〚〛" "⦃⦄" "‹›" "«»" "「」" "〈〉" "《》" "【】" "〔〕" "⦗⦘" "『』" "〖〗" "〘〙" "｢｣" "⟦⟧" "⟨⟩" "⟪⟫" "⟮⟯" "⟬⟭" "⌈⌉" "⌊⌋" "⦇⦈" "⦉⦊" "❛❜" "❝❞" "❨❩" "❪❫" "❴❵" "❬❭" "❮❯" "❰❱" "❲❳" "〈〉" "⦑⦒" "⧼⧽" "﹙﹚" "﹛﹜" "﹝﹞" "⁽⁾" "₍₎" "⦋⦌" "⦍⦎" "⦏⦐" "⁅⁆" "⸢⸣" "⸤⸥" "⟅⟆" "⦓⦔" "⦕⦖" "⸦⸧" "⸨⸩" "｟｠"))
 
-;;; sudo-save.el --- Allow saving files using sudo
+(defconst xah-left-brackets
+  (mapcar (lambda (x) (substring x 0 1)) xah-brackets))
 
-;; Copyright (C) 2003 Free Software Foundation, Inc.
+(defconst xah-right-brackets
+  (mapcar (lambda (x) (substring x 1 2)) xah-brackets))
 
-;; Author: Kevin A. Burton (burton@peerfear.org)
-;; Maintainer: Kevin A. Burton (burton@peerfear.org)
-;; Location: http://www.peerfear.org
-;; Keywords: 
-;; Version: 1.0
+(defun xah-backward-left-bracket ()
+  "Move cursor to the previous occurrence of left bracket.
+The list of brackets to jump to is defined by `xah-left-brackets'"
+  (interactive)
+  (re-search-backward (regexp-opt xah-left-brackets) nil t))
 
-;; This file is [not yet] part of GNU Emacs.
+(defun xah-forward-right-bracket ()
+  "Move cursor to the next occurrence of right bracket.
+The list of brackets to jump to is defined by `xah-right-brackets'"
+  (interactive)
+  (re-search-forward (regexp-opt xah-right-brackets) nil t))
 
-;; This program is free software; you can redistribute it and/or modify it under
-;; the terms of the GNU General Public License as published by the Free Software
-;; Foundation; either version 2 of the License, or any later version.
-;;
-;; This program is distributed in the hope that it will be useful, but WITHOUT
-;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-;; FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
-;; details.
-;;
-;; You should have received a copy of the GNU General Public License along with
-;; this program; if not, write to the Free Software Foundation, Inc., 59 Temple
-;; Place - Suite 330, Boston, MA 02111-1307, USA.
+(defun xah-next-window-or-frame ()
+  "Switch to next window or frame.
+If current frame has only one window, switch to next frame.
+If `universal-argument' is called first, do switch frame"
+  (interactive)
+  (if current-prefix-arg
+      (other-frame 1)
+    (if (one-window-p)
+        (other-frame 1)
+      (other-window 1))))
 
-;;; Commentary:
+(defun xah-comment-dwim ()
+  "Like `comment-dwim', but toggle comment if cursor is not at end of line.
+URL `http://xahlee.info/emacs/emacs/emacs_toggle_comment_by_line.html'
+Version: 2016-10-25"
+  (interactive)
+  (if (region-active-p)
+      (comment-dwim nil)
+    (let (($lbp (line-beginning-position))
+          ($lep (line-end-position)))
+      (if (eq $lbp $lep)
+          (progn
+            (comment-dwim nil))
+        (if (eq (point) $lep)
+            (progn
+              (comment-dwim nil))
+          (progn
+            (comment-or-uncomment-region $lbp $lep)
+            (forward-line )))))))
 
-;; Use `write-file-hooks' and `after-save-hook' to run "sudo chown ... " before
-;; AND after file save.  This allows the Emacs process to grant ownership to the
-;; user and then restore ownership just after save.
+(defun xah-extend-selection ()
+  "Select the current word, bracket/quote expression, or expand selection.
+Subsequent calls expands the selection.
 
-;; TODO:
-;;
-;; - Actually what we SHOULD do is actually do a chown this way and NOT a chmod.
-;;
-;; - Can sudo cache passwords?  I think it can.
-;;
-;; - Ability to chmod a+r a file JUST prior to reading it ... and then restoring
-;;   permissions RIGHT after it.
-;;
-;; - Ability to s
-;;
+when there is no selection,
+• if cursor is on a any type of bracket (including parenthesis, quotation mark), select whole bracketed thing including bracket
+• else, select current word.
 
-;;; History:
-  
-;;; Code:
+when there is a selection, the selection extension behavior is still experimental. But when cursor is on a any type of bracket (parenthesis, quote), it extends selection to outer bracket.
 
-(defvar sudo-save-file-uid nil "")
+URL `http://xahlee.info/emacs/emacs/modernization_mark-word.html'
+Version: 2020-02-04 2022-05-16"
+  (interactive)
+  (if (region-active-p)
+      (progn
+        (let (($rb (region-beginning)) ($re (region-end)))
+          (goto-char $rb)
+          (cond
+           ((looking-at "\\s(")
+            (if (eq (nth 0 (syntax-ppss)) 0)
+                (progn
+                  ;; (message "left bracket, depth 0.")
+                  (end-of-line) ; select current line
+                  (set-mark (line-beginning-position)))
+              (progn
+                ;; (message "left bracket, depth not 0")
+                (up-list -1 t t)
+                (mark-sexp))))
+           ((eq $rb (line-beginning-position))
+            (progn
+              (goto-char $rb)
+              (let (($firstLineEndPos (line-end-position)))
+                (cond
+                 ((eq $re $firstLineEndPos)
+                  (progn
+                    ;; (message "exactly 1 line. extend to next whole line." )
+                    (forward-line 1)
+                    (end-of-line)))
+                 ((< $re $firstLineEndPos)
+                  (progn
+                    ;; (message "less than 1 line. complete the line." )
+                    (end-of-line)))
+                 ((> $re $firstLineEndPos)
+                  (progn
+                    ;; (message "beginning of line, but end is greater than 1st end of line" )
+                    (goto-char $re)
+                    (if (eq (point) (line-end-position))
+                        (progn
+                          ;; (message "exactly multiple lines" )
+                          (forward-line 1)
+                          (end-of-line))
+                      (progn
+                        ;; (message "multiple lines but end is not eol. make it so" )
+                        (goto-char $re)
+                        (end-of-line)))))
+                 (t (error "%s: logic error 42946" real-this-command ))))))
+           ((and (> (point) (line-beginning-position)) (<= (point) (line-end-position)))
+            (progn
+              ;; (message "less than 1 line" )
+              (end-of-line) ; select current line
+              (set-mark (line-beginning-position))))
+           (t
+            ;; (message "last resort" )
+            nil))))
+    (progn
+      (cond
+       ((looking-at "\\s(")
+        ;; (message "left bracket")
+        (mark-sexp)) ; left bracket
+       ((looking-at "\\s)")
+        ;; (message "right bracket")
+        (backward-up-list) (mark-sexp))
+       ((looking-at "\\s\"")
+        ;; (message "string quote")
+        (mark-sexp)) ; string quote
+       ;; ((and (eq (point) (line-beginning-position)) (not (looking-at "\n")))
+       ;;  (message "beginning of line and not empty")
+       ;;  (end-of-line)
+       ;;  (set-mark (line-beginning-position)))
+       ((or (looking-back "\\s_" 1) (looking-back "\\sw" 1))
+        ;; (message "left is word or symbol")
+        (skip-syntax-backward "_w" )
+        ;; (re-search-backward "^\\(\\sw\\|\\s_\\)" nil t)
+        (push-mark)
+        (skip-syntax-forward "_w")
+        (setq mark-active t)
+        ;; (exchange-point-and-mark)
+        )
+       ((and (looking-at "\\s ") (looking-back "\\s " 1))
+        ;; (message "left and right both space" )
+        (skip-chars-backward "\\s " ) (set-mark (point))
+        (skip-chars-forward "\\s "))
+       ((and (looking-at "\n") (looking-back "\n" 1))
+        ;; (message "left and right both newline")
+        (skip-chars-forward "\n")
+        (set-mark (point))
+        (re-search-forward "\n[ \t]*\n")) ; between blank lines, select next block
+       (t
+        ;; (message "just mark sexp" )
+        (mark-sexp)
+        (exchange-point-and-mark))
+       ;;
+       ))))
 
-(defun sudo-save--after-save-hook()
-  "If we've chown'd this file then we should restore it's ownership."
+(defun xah-select-block ()
+  "Select the current/next block of text between blank lines.
+If region is active, extend selection downward by block.
 
-  (when sudo-save-file-uid
+URL `http://xahlee.info/emacs/emacs/modernization_mark-word.html'
+Version 2019-12-26"
+  (interactive)
+  (if (region-active-p)
+      (re-search-forward "\n[ \t]*\n" nil "move")
+    (progn
+      (skip-chars-forward " \n\t")
+      (when (re-search-backward "\n[ \t]*\n" nil "move")
+        (re-search-forward "\n[ \t]*\n"))
+      (push-mark (point) t t)
+      (re-search-forward "\n[ \t]*\n" nil "move"))))
 
-    ;;restore original file access.
-    (sudo-save--chown (number-to-string sudo-save-file-uid) (buffer-file-name))
-    
-    (setq sudo-save-file-uid nil)
 
-    (message "Wrote (with sudo) %s" (buffer-file-name))))
-
-(defun sudo-save--chown(user file-name)
-
-  (message "sudo chown %s %s" user file-name)
-
-  (call-process "sudo" nil nil nil
-                "chown"
-                user
-                file-name))
-  
-(defun sudo-save--write-file-hook()
-  "Take ownership of this file and later restore it."
-
-  ;;take a snapshow of the owner of the file.
-
-  ;;call sudo to change the file's modes
-
-  (when (not (file-writable-p (buffer-file-name)))
-
-    ;;preserve uid of file
-    (setq sudo-save-file-uid (nth 2 (file-attributes (buffer-file-name))))
-    
-    (sudo-save--chown user-login-name (buffer-file-name)))
-  
-  nil)
-
-(defun sudo-save--find-file-hook()
-  "Disable read-only support since this is no obsolete for this file."
-  (setq buffer-read-only nil))
-  
-(add-hook 'write-file-hooks 'sudo-save--write-file-hook)
-(add-hook 'after-save-hook 'sudo-save--after-save-hook)
-(add-hook 'find-file-hooks 'sudo-save--find-file-hook)
-
-(provide 'sudo-save)
-
-;;; sudo-save.el ends here

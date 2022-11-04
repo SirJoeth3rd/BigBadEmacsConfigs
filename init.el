@@ -1,27 +1,25 @@
 
-;;enable melpa
+;;big daddy setup, makes sure use-package is installed/used
+;;makes emacs highly moveable between machines
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; Comment/uncomment this line to enable MELPA Stable if desired.
-;; See `package-archive-priorities` and `package-pinned-packages`.
-;; Most users will not need or want to do this.
-;; (add-to-list 'package-archives
-;;              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
-;; Enable vertico
-(use-package vertico
-  :init
-  (vertico-mode)
-  ;; vertico cycling
-  (setq vertico-cycle t)
-  )
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(eval-and-compile
+  (setq use-package-always-ensure t
+        use-package-expand-minimally t))
 
-;; Persist history over Emacs restarts. Vertico sorts by history position.
-(use-package savehist
-  :init
-  (savehist-mode))
-
+;;quick use-package doc
+;; :init -> exprs pre package load
+;; :config -> exprs post package load
+;; :mode -> regex of files to load a mode for
+;; :hook -> (a-mode . b-mode) expands to add-hook
+;; :custom-face -> expands to set face attribute
+ 
 ;; A few more useful configurations...
 (use-package emacs
   :init
@@ -54,7 +52,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(yasnippet-snippets yasnippet php-mode vertico-posframe use-package)))
+   '(tuareg which-key hy-Mode js2-mode company flycheck hy-mode sly svelte-mode yasnippet-snippets yasnippet php-mode vertico-posframe use-package))
+ '(safe-local-variable-values '((git-commit-major-mode . git-commit-elisp-text-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -63,22 +62,23 @@
  )
 
 ;;Xah fly keys, modal editing++
-(add-to-list 'load-path "~/.emacs.d/lisp/")
-(require 'xah-fly-keys)
-(xah-fly-keys-set-layout "qwerty")
-;;activate it
-(xah-fly-keys 1)
-
-
+ ;; (add-to-list 'load-path "~/.emacs.d/lisp/")
+ ;; (require 'xah-fly-keys)
+ ;; (xah-fly-keys-set-layout "qwerty")
+ ;; ;;activate it
+ ;; (xah-fly-keys 1)
 
 ;;include the config files
 (add-to-list 'load-path "~/.emacs.d/configs/")
 
 ;; load individual files
-(load "remaps")     ;;key remaps
 (load "packages")   ;;load in packages, if too bg it gets its own file
 (load "misc")       ;;misc for temporary testing
 (load "functions")  ;;all custom functions
 (load "settings")   ;;all settings
+(load "remaps")     ;;key remaps (loaded last with reason)
 (load "php-mode-autoloads") ;; php mode (activation in settings)
 
+;;starts the server allowing us to use emacs clients and create multiple
+;; connected editors
+(server-start)
