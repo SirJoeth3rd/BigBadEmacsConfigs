@@ -40,9 +40,10 @@
 ;;these are placed seperately since C-c
 ;;is for user defined functions
 (general-define-key
- :prefic "C-c"
+ :prefix "C-c"
  :keymaps 'override
- "C-t" 'open-terminal-in-workdir)
+ "C-t" 'open-terminal-in-workdir
+ "C-b" 'buffer-menu)
 
 ;;my delete keybinds
 (general-define-key

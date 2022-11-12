@@ -23,6 +23,12 @@
 ;; A few more useful configurations...
 (use-package emacs
   :init
+  ;;following is for corfu
+  ;;TAB cycle if only few candidates
+  (setq completion-cycle-threshold 3)
+  ;;enable indentation and completion using TAB
+  (setq tab-always-indent 'complete)
+  
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
   (defun crm-indicator (args)
@@ -51,8 +57,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("3e374bb5eb46eb59dbd92578cae54b16de138bc2e8a31a2451bf6fdb0f3fd81b" "72ed8b6bffe0bfa8d097810649fd57d2b598deef47c992920aef8b5d9599eefe" default))
  '(package-selected-packages
-   '(tuareg which-key hy-Mode js2-mode company flycheck hy-mode sly svelte-mode yasnippet-snippets yasnippet php-mode vertico-posframe use-package))
+   '(eglot tide typescript-mode tree-sitter-langs tree-sitter dirvish gruvbox-theme tuareg which-key hy-Mode js2-mode company flycheck hy-mode sly svelte-mode yasnippet-snippets yasnippet php-mode vertico-posframe use-package))
  '(safe-local-variable-values '((git-commit-major-mode . git-commit-elisp-text-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

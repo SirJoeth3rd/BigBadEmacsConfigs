@@ -58,10 +58,48 @@
 (use-package which-key
   :config (which-key-mode))
 
+;;used for ocaml dev
 (use-package tuareg
   :mode ("\\.ml?\\'" . tuareg-mode))
 
+;;just the color theme
+(use-package gruvbox-theme
+  :config (load-theme 'gruvbox-light-medium))
+
 ;;dirvish, basically dired++
-;;(use-package dirvish
+(use-package dirvish
+  :config
+  (dirvish-override-dired-mode))
+
+;;
+(use-package company
+  :config
+  (add-hook 'after-init-hook 'global-company-mode))
+
+;;for working with typescript
+(use-package typescript-mode
+  :mode ("\\.ts?\\'" . typescript-mode))
+(use-package tide
+  :config
+  (defun setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1))
+  
+  ;; formats the buffer before saving
+  (add-hook 'before-save-hook 'tide-format-before-save)
+  (add-hook 'typescript-mode-hook #'setup-tide-mode))
+
+;;my play with tree sitter
+;;(use-package tree-sitter
+;;  :ensure t
 ;;  :config
-;;  (dirvish-override-dired-mode))
+;;  (global-tree-sitter-mode)
+;;  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+;;support for a bunch of langauges
+;;(use-package tree-sitter-langs
+;;  :ensure t
+;;  :after tree-sitter)
