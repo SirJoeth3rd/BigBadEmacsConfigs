@@ -17,8 +17,6 @@
 
 ;;this mode automatically updates files that have changed on the disk
 (global-auto-revert-mode 1)
-;; Revert Dired and other buffers
-(setq global-auto-revert-non-file-buffers t)
 
 ;; Remember and restore the last cursor location of opened files
 (save-place-mode 1)

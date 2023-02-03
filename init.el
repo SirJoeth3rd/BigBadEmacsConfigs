@@ -13,6 +13,21 @@
   (setq use-package-always-ensure t
         use-package-expand-minimally t))
 
+;;quelpa can load packages automatically
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
+
+;;to be able to use use-package with the quelpa keyword
+;; (quelpa
+;;  '(quelpa-use-package
+;;    :fetcher git
+;;    :url "https://github.com/quelpa/quelpa-use-package.git"))
+;; (require 'quelpa-use-package)
+
+
 ;;quick use-package doc
 ;; :init -> exprs pre package load
 ;; :config -> exprs post package load
@@ -60,7 +75,7 @@
  '(custom-safe-themes
    '("3e374bb5eb46eb59dbd92578cae54b16de138bc2e8a31a2451bf6fdb0f3fd81b" "72ed8b6bffe0bfa8d097810649fd57d2b598deef47c992920aef8b5d9599eefe" default))
  '(package-selected-packages
-   '(eglot tide typescript-mode tree-sitter-langs tree-sitter dirvish gruvbox-theme tuareg which-key hy-Mode js2-mode company flycheck hy-mode sly svelte-mode yasnippet-snippets yasnippet php-mode vertico-posframe use-package))
+   '(visual-regexp esup lsp-mode flycheck-clang-analyzer web-mode quelpa-use-package quelpa eglot tide typescript-mode tree-sitter-langs tree-sitter dirvish gruvbox-theme tuareg which-key hy-Mode js2-mode company flycheck hy-mode sly svelte-mode yasnippet-snippets yasnippet php-mode vertico-posframe use-package))
  '(safe-local-variable-values '((git-commit-major-mode . git-commit-elisp-text-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

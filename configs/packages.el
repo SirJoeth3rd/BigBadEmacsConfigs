@@ -1,10 +1,15 @@
+;;TODO make all my modes eglot centric
+
+;;the search and replace you deserve
+(use-package visual-regexp
+  :ensure t)
+
 ;; Enable vertico
 (use-package vertico
   :init
   (vertico-mode)
   ;; vertico cycling
-  (setq vertico-cycle t)
-  )
+  (setq vertico-cycle t))
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
@@ -19,7 +24,8 @@
 
 ;;svelte mode
 (use-package svelte-mode
-  :mode ("\\.svelte?\\'" . svelte-mode))
+  :mode ("\\.svelte?\\'" . svelte-mode)
+  :hook (eglot))
 
 ;;Highlight matching paren
 (use-package paren
@@ -34,14 +40,15 @@
   :ensure t
   :config (global-flycheck-mode))
 
+;;c/c++ static analysis
+(use-package flycheck-clang-analyzer
+  :ensure t
+  :after flycheck
+  :config (flycheck-clang-analyzer-setup))
+
 ;;the beter js-mode
 (use-package js2-mode
   :mode ("\\.js?\\'" . js2-mode))
-
-;;auto completion
-;; (use-package company
-;;   :ensure t
-;;   :init (add-hook 'after-init-hook 'global-company-mode))
 
 ;;god-mode
 (use-package god-mode
@@ -58,9 +65,10 @@
 (use-package which-key
   :config (which-key-mode))
 
-;;used for ocaml dev
+;;ocaml developement packages start here
 (use-package tuareg
-  :mode ("\\.ml?\\'" . tuareg-mode))
+  :mode ("\\.ml?\\'" . tuareg-mode)
+  :hook (tuareg-mode . eglot-ensure))
 
 ;;just the color theme
 (use-package gruvbox-theme
@@ -71,10 +79,12 @@
   :config
   (dirvish-override-dired-mode))
 
-;;
+;;for popping up autocompletions
 (use-package company
+  :ensure t
   :config
-  (add-hook 'after-init-hook 'global-company-mode))
+  (add-hook 'after-init-hook 'global-company-mode)
+  (setq company-idle-delay 0))
 
 ;;for working with typescript
 (use-package typescript-mode
@@ -93,13 +103,16 @@
   (add-hook 'before-save-hook 'tide-format-before-save)
   (add-hook 'typescript-mode-hook #'setup-tide-mode))
 
-;;my play with tree sitter
-;;(use-package tree-sitter
-;;  :ensure t
-;;  :config
-;;  (global-tree-sitter-mode)
-;;  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-;;support for a bunch of langauges
-;;(use-package tree-sitter-langs
-;;  :ensure t
-;;  :after tree-sitter)
+;;web mode for webshit TODO -> need to activate automatically for modes
+(use-package web-mode)
+
+;;eglot bro it's eglot
+(use-package eglot
+  :config
+  (add-to-list 'eglot-server-programs
+	       '(svelte-mode . ("svelteserver" "--stdio"))))
+
+;;esup is a performance profiler
+(use-package esup
+  :ensure t)
+(setq esup-depth 0) ;;fixes esup bug

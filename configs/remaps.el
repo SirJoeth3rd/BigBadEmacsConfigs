@@ -16,7 +16,7 @@
 ;; but it works well with godmode
 (general-define-key
  :keymaps 'override
- "C-f" 'god-mode-all ;;TODO-> make this the god mode switcher
+ "C-f" 'god-mode-all
  "C-p" 'previous-line
  "C-k" 'next-line
  "C-j" 'left-char
@@ -35,6 +35,8 @@
  "C-n" 'isearch-forward ;;change this to regex
  "C-e" 'universal-argument
  "C-8" 'xah-extend-selection
+ "M-%" 'vr/replace
+ "C-M-%" 'vr/query-replace
  )
 
 ;;these are placed seperately since C-c
