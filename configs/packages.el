@@ -86,6 +86,27 @@
   (add-hook 'after-init-hook 'global-company-mode)
   (setq company-idle-delay 0))
 
+(use-package company
+  :ensure t
+  :defer t
+  :config
+  (add-hook 'after-init-hook 'global-company-mode)
+  (setq company-idle-delay 0)
+  :custom
+  ;;search only in same-mode buffers
+  (company-dabbrev-other-buffers t)
+  (company-dabbrev-code-other-buffers t)
+  ;;M-<num> to select option <num>
+  (company-show-numbers t)
+  ;;Start completion after 2 letters
+  (company-minimum-prefix-length 3)
+  ;;no company mode in shell and eshell
+  (company-global-modes '(not eshell-mode shell-mode))
+  ;;use company with text and programming modes
+  :hook ((text-mode . company-mode)
+	 (prog-mode . company-mode))
+  )
+
 ;;for working with typescript
 (use-package typescript-mode
   :mode ("\\.ts?\\'" . typescript-mode))
@@ -108,11 +129,29 @@
 
 ;;eglot bro it's eglot
 (use-package eglot
+  :ensure t
+  :defer t
   :config
   (add-to-list 'eglot-server-programs
-	       '(svelte-mode . ("svelteserver" "--stdio"))))
+	       '(svelte-mode . ("svelteserver" "--stdio")))
+  )
 
 ;;esup is a performance profiler
 (use-package esup
   :ensure t)
 (setq esup-depth 0) ;;fixes esup bug
+
+;;elm language server is broken so can't use that
+(use-package elm-mode
+  :config
+  (setq elm-mode-hook '(elm-indent-simple-mode)))
+
+(use-package cider)
+
+(use-package go-mode)
+
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable))
+

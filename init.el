@@ -73,9 +73,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("3e374bb5eb46eb59dbd92578cae54b16de138bc2e8a31a2451bf6fdb0f3fd81b" "72ed8b6bffe0bfa8d097810649fd57d2b598deef47c992920aef8b5d9599eefe" default))
+   '("98ef36d4487bf5e816f89b1b1240d45755ec382c7029302f36ca6626faf44bbd" "3e374bb5eb46eb59dbd92578cae54b16de138bc2e8a31a2451bf6fdb0f3fd81b" "72ed8b6bffe0bfa8d097810649fd57d2b598deef47c992920aef8b5d9599eefe" default))
  '(package-selected-packages
-   '(visual-regexp esup lsp-mode flycheck-clang-analyzer web-mode quelpa-use-package quelpa eglot tide typescript-mode tree-sitter-langs tree-sitter dirvish gruvbox-theme tuareg which-key hy-Mode js2-mode company flycheck hy-mode sly svelte-mode yasnippet-snippets yasnippet php-mode vertico-posframe use-package))
+   '(elpy go-mode cider elm-mode general visual-regexp esup lsp-mode flycheck-clang-analyzer web-mode quelpa-use-package quelpa eglot tide typescript-mode tree-sitter-langs tree-sitter dirvish gruvbox-theme tuareg which-key hy-Mode js2-mode company flycheck hy-mode sly svelte-mode yasnippet-snippets yasnippet php-mode vertico-posframe use-package))
  '(safe-local-variable-values '((git-commit-major-mode . git-commit-elisp-text-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

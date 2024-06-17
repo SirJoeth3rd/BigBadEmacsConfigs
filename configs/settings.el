@@ -27,3 +27,9 @@
 ;;enable upcase and downcase region
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
+
+;;enable line numbers
+(global-linum-mode)
+
+;;disable sound
+(setq visible-bell 1)
