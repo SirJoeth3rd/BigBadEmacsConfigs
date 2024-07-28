@@ -22,11 +22,6 @@
 (use-package yasnippet
   :config (yas-global-mode 1))
 
-;;svelte mode
-(use-package svelte-mode
-  :mode ("\\.svelte?\\'" . svelte-mode)
-  :hook (eglot))
-
 ;;Highlight matching paren
 (use-package paren
   :ensure nil
@@ -46,10 +41,6 @@
   :after flycheck
   :config (flycheck-clang-analyzer-setup))
 
-;;the beter js-mode
-(use-package js2-mode
-  :mode ("\\.js?\\'" . js2-mode))
-
 ;;god-mode
 (use-package god-mode
   :config
@@ -65,11 +56,6 @@
 (use-package which-key
   :config (which-key-mode))
 
-;;ocaml developement packages start here
-(use-package tuareg
-  :mode ("\\.ml?\\'" . tuareg-mode)
-  :hook (tuareg-mode . eglot-ensure))
-
 ;;just the color theme
 (use-package gruvbox-theme
   :config (load-theme 'gruvbox-light-medium))
@@ -78,13 +64,6 @@
 (use-package dirvish
   :config
   (dirvish-override-dired-mode))
-
-;;for popping up autocompletions
-(use-package company
-  :ensure t
-  :config
-  (add-hook 'after-init-hook 'global-company-mode)
-  (setq company-idle-delay 0))
 
 (use-package company
   :ensure t
@@ -107,26 +86,6 @@
 	 (prog-mode . company-mode))
   )
 
-;;for working with typescript
-(use-package typescript-mode
-  :mode ("\\.ts?\\'" . typescript-mode))
-(use-package tide
-  :config
-  (defun setup-tide-mode ()
-    (interactive)
-    (tide-setup)
-    (flycheck-mode +1)
-    (setq flycheck-check-syntax-automatically '(save mode-enabled))
-    (eldoc-mode +1)
-    (tide-hl-identifier-mode +1))
-  
-  ;; formats the buffer before saving
-  (add-hook 'before-save-hook 'tide-format-before-save)
-  (add-hook 'typescript-mode-hook #'setup-tide-mode))
-
-;;web mode for webshit TODO -> need to activate automatically for modes
-(use-package web-mode)
-
 ;;eglot bro it's eglot
 (use-package eglot
   :ensure t
@@ -140,15 +99,6 @@
 (use-package esup
   :ensure t)
 (setq esup-depth 0) ;;fixes esup bug
-
-;;elm language server is broken so can't use that
-(use-package elm-mode
-  :config
-  (setq elm-mode-hook '(elm-indent-simple-mode)))
-
-(use-package cider)
-
-(use-package go-mode)
 
 (use-package elpy
   :ensure t

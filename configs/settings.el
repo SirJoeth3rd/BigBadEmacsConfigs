@@ -29,7 +29,10 @@
 (put 'downcase-region 'disabled nil)
 
 ;;enable line numbers
-(global-linum-mode)
+(global-display-line-numbers-mode)
 
 ;;disable sound
 (setq visible-bell 1)
+
+;;don't tell me about style errors in my packages
+(setq warning-minimum-level :warning)
